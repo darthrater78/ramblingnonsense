@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  zwave-js-ui:
+    container_name: zwave-js-ui
+    image: zwavejs/zwave-js-ui:latest
+    restart: unless-stopped
+    tty: true
+    stop_signal: SIGINT
+    environment:
+      - SESSION_SECRET=mysupersecretkey
+      - ZWAVEJS_EXTERNAL_CONFIG=/usr/src/app/store/.config-db
+      - PORT=8091
+      # Uncomment below to import keys
+      # Add your security keys here:
+      # - S0_LEGACY_KEY=
+      # - S2_ACCESS_CONTROL_KEY=
+      # - S2_AUTHENTICATED_KEY=
+      # - S2_UNAUTHENTICATED_KEY=
+    devices:
+      - '/dev/ttyACM0:/dev/zwave'  # Your Z-Wave stick device
+    volumes:
+      - [local bind mount]:/usr/src/app/store
+    ports:
+      - '8091:8091' # Web UI
+      - '3000:3000' # Websocket
