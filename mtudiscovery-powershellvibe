@@ -1,0 +1,471 @@
+#=====================================================================================================================================
+#You can convert to an exe with psexe. 
+#example:  
+#Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+#Install-Module PS2EXE
+#ps2exe -inputFile .\MTU-Discovery.ps1 -outputFile .\MTU-Discovery.exe -iconFile .\icon.ico -title "MTU Discovery Tool" -description "Network MTU Path Discovery Utility" -company "Your Name" -version "1.0.0.0" -noConsole
+#=====================================================================================================================================
+
+
+
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# Create the main form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "MTU Discovery Tool"
+$form.Size = New-Object System.Drawing.Size(500, 600)
+$form.StartPosition = "CenterScreen"
+$form.FormBorderStyle = "FixedSingle"
+$form.MaximizeBox = $false
+
+# Target host input
+$labelHost = New-Object System.Windows.Forms.Label
+$labelHost.Location = New-Object System.Drawing.Point(10, 15)
+$labelHost.Size = New-Object System.Drawing.Size(100, 20)
+$labelHost.Text = "Target Host:"
+$form.Controls.Add($labelHost)
+
+$textBoxHost = New-Object System.Windows.Forms.TextBox
+$textBoxHost.Location = New-Object System.Drawing.Point(120, 12)
+$textBoxHost.Size = New-Object System.Drawing.Size(200, 20)
+$textBoxHost.Text = "google.com"
+$form.Controls.Add($textBoxHost)
+
+# Start size input
+$labelStart = New-Object System.Windows.Forms.Label
+$labelStart.Location = New-Object System.Drawing.Point(10, 45)
+$labelStart.Size = New-Object System.Drawing.Size(100, 20)
+$labelStart.Text = "Start Size (bytes):"
+$form.Controls.Add($labelStart)
+
+$numericStart = New-Object System.Windows.Forms.NumericUpDown
+$numericStart.Location = New-Object System.Drawing.Point(120, 42)
+$numericStart.Size = New-Object System.Drawing.Size(80, 20)
+$numericStart.Minimum = 1
+$numericStart.Maximum = 65527
+$numericStart.Value = 32
+$form.Controls.Add($numericStart)
+
+# End size input
+$labelEnd = New-Object System.Windows.Forms.Label
+$labelEnd.Location = New-Object System.Drawing.Point(220, 45)
+$labelEnd.Size = New-Object System.Drawing.Size(80, 20)
+$labelEnd.Text = "End Size:"
+$form.Controls.Add($labelEnd)
+
+$numericEnd = New-Object System.Windows.Forms.NumericUpDown
+$numericEnd.Location = New-Object System.Drawing.Point(300, 42)
+$numericEnd.Size = New-Object System.Drawing.Size(80, 20)
+$numericEnd.Minimum = 1
+$numericEnd.Maximum = 65527
+$numericEnd.Value = 1472
+$form.Controls.Add($numericEnd)
+
+# Increment input
+$labelIncrement = New-Object System.Windows.Forms.Label
+$labelIncrement.Location = New-Object System.Drawing.Point(10, 75)
+$labelIncrement.Size = New-Object System.Drawing.Size(100, 20)
+$labelIncrement.Text = "Increment:"
+$form.Controls.Add($labelIncrement)
+
+$numericIncrement = New-Object System.Windows.Forms.NumericUpDown
+$numericIncrement.Location = New-Object System.Drawing.Point(120, 72)
+$numericIncrement.Size = New-Object System.Drawing.Size(80, 20)
+$numericIncrement.Minimum = 1
+$numericIncrement.Maximum = 1000
+$numericIncrement.Value = 8
+$form.Controls.Add($numericIncrement)
+
+# Delay input
+$labelDelay = New-Object System.Windows.Forms.Label
+$labelDelay.Location = New-Object System.Drawing.Point(220, 75)
+$labelDelay.Size = New-Object System.Drawing.Size(80, 20)
+$labelDelay.Text = "Delay (ms):"
+$form.Controls.Add($labelDelay)
+
+$numericDelay = New-Object System.Windows.Forms.NumericUpDown
+$numericDelay.Location = New-Object System.Drawing.Point(300, 72)
+$numericDelay.Size = New-Object System.Drawing.Size(80, 20)
+$numericDelay.Minimum = 0
+$numericDelay.Maximum = 10000
+$numericDelay.Value = 500
+$form.Controls.Add($numericDelay)
+
+# Options group box
+$groupOptions = New-Object System.Windows.Forms.GroupBox
+$groupOptions.Location = New-Object System.Drawing.Point(10, 105)
+$groupOptions.Size = New-Object System.Drawing.Size(460, 120)
+$groupOptions.Text = "Ping Options"
+$form.Controls.Add($groupOptions)
+
+# Don't Fragment checkbox
+$checkBoxDF = New-Object System.Windows.Forms.CheckBox
+$checkBoxDF.Location = New-Object System.Drawing.Point(15, 25)
+$checkBoxDF.Size = New-Object System.Drawing.Size(200, 20)
+$checkBoxDF.Text = "Don't Fragment (-f)"
+$checkBoxDF.Checked = $true
+$groupOptions.Controls.Add($checkBoxDF)
+
+# Ping count input
+$labelCount = New-Object System.Windows.Forms.Label
+$labelCount.Location = New-Object System.Drawing.Point(15, 55)
+$labelCount.Size = New-Object System.Drawing.Size(100, 20)
+$labelCount.Text = "Pings per size:"
+$groupOptions.Controls.Add($labelCount)
+
+$numericCount = New-Object System.Windows.Forms.NumericUpDown
+$numericCount.Location = New-Object System.Drawing.Point(120, 52)
+$numericCount.Size = New-Object System.Drawing.Size(60, 20)
+$numericCount.Minimum = 1
+$numericCount.Maximum = 100
+$numericCount.Value = 1
+$groupOptions.Controls.Add($numericCount)
+
+# Timeout input
+$labelTimeout = New-Object System.Windows.Forms.Label
+$labelTimeout.Location = New-Object System.Drawing.Point(200, 55)
+$labelTimeout.Size = New-Object System.Drawing.Size(80, 20)
+$labelTimeout.Text = "Timeout (ms):"
+$groupOptions.Controls.Add($labelTimeout)
+
+$numericTimeout = New-Object System.Windows.Forms.NumericUpDown
+$numericTimeout.Location = New-Object System.Drawing.Point(285, 52)
+$numericTimeout.Size = New-Object System.Drawing.Size(80, 20)
+$numericTimeout.Minimum = 100
+$numericTimeout.Maximum = 30000
+$numericTimeout.Value = 4000
+$groupOptions.Controls.Add($numericTimeout)
+
+# Stop on first failure checkbox
+$checkBoxStopOnFailure = New-Object System.Windows.Forms.CheckBox
+$checkBoxStopOnFailure.Location = New-Object System.Drawing.Point(15, 85)
+$checkBoxStopOnFailure.Size = New-Object System.Drawing.Size(200, 20)
+$checkBoxStopOnFailure.Text = "Stop on first failure"
+$checkBoxStopOnFailure.Checked = $true
+$groupOptions.Controls.Add($checkBoxStopOnFailure)
+
+# Verbose output checkbox
+$checkBoxVerbose = New-Object System.Windows.Forms.CheckBox
+$checkBoxVerbose.Location = New-Object System.Drawing.Point(230, 85)
+$checkBoxVerbose.Size = New-Object System.Drawing.Size(150, 20)
+$checkBoxVerbose.Text = "Verbose output"
+$checkBoxVerbose.Checked = $false
+$groupOptions.Controls.Add($checkBoxVerbose)
+
+# Control buttons
+$buttonStart = New-Object System.Windows.Forms.Button
+$buttonStart.Location = New-Object System.Drawing.Point(10, 235)
+$buttonStart.Size = New-Object System.Drawing.Size(100, 30)
+$buttonStart.Text = "Start Test"
+$buttonStart.BackColor = [System.Drawing.Color]::LightGreen
+$form.Controls.Add($buttonStart)
+
+$buttonStop = New-Object System.Windows.Forms.Button
+$buttonStop.Location = New-Object System.Drawing.Point(120, 235)
+$buttonStop.Size = New-Object System.Drawing.Size(100, 30)
+$buttonStop.Text = "Stop Test"
+$buttonStop.BackColor = [System.Drawing.Color]::LightCoral
+$buttonStop.Enabled = $false
+$form.Controls.Add($buttonStop)
+
+$buttonClear = New-Object System.Windows.Forms.Button
+$buttonClear.Location = New-Object System.Drawing.Point(230, 235)
+$buttonClear.Size = New-Object System.Drawing.Size(100, 30)
+$buttonClear.Text = "Clear Output"
+$form.Controls.Add($buttonClear)
+
+$buttonSave = New-Object System.Windows.Forms.Button
+$buttonSave.Location = New-Object System.Drawing.Point(340, 235)
+$buttonSave.Size = New-Object System.Drawing.Size(100, 30)
+$buttonSave.Text = "Save Results"
+$form.Controls.Add($buttonSave)
+
+# Progress bar
+$progressBar = New-Object System.Windows.Forms.ProgressBar
+$progressBar.Location = New-Object System.Drawing.Point(10, 275)
+$progressBar.Size = New-Object System.Drawing.Size(460, 20)
+$form.Controls.Add($progressBar)
+
+# Output text box
+$textBoxOutput = New-Object System.Windows.Forms.TextBox
+$textBoxOutput.Location = New-Object System.Drawing.Point(10, 305)
+$textBoxOutput.Size = New-Object System.Drawing.Size(460, 250)
+$textBoxOutput.Multiline = $true
+$textBoxOutput.ScrollBars = "Vertical"
+$textBoxOutput.ReadOnly = $true
+$textBoxOutput.Font = New-Object System.Drawing.Font("Consolas", 9)
+$form.Controls.Add($textBoxOutput)
+
+# Global variables for controlling the test
+$script:testRunning = $false
+$script:stopRequested = $false
+$script:testTimer = $null
+$script:currentSize = 0
+$script:testParams = @{}
+$script:lastSuccessfulSize = 0
+
+# Function to add text to output
+function Add-OutputText {
+    param([string]$text)
+    $textBoxOutput.AppendText("$text`r`n")
+    $textBoxOutput.SelectionStart = $textBoxOutput.Text.Length
+    $textBoxOutput.ScrollToCaret()
+    [System.Windows.Forms.Application]::DoEvents()
+}
+
+# Function to run a single ping test
+function Test-SinglePing {
+    param($size, $hostTarget, $dontFragment, $pingCount, $timeout)
+    
+    $pingArgs = @("-l", $size, "-n", $pingCount, "-w", $timeout)
+    if ($dontFragment) {
+        $pingArgs += "-f"
+    }
+    $pingArgs += $hostTarget
+    
+    try {
+        $result = & ping @pingArgs 2>&1
+        $success = $LASTEXITCODE -eq 0
+        $resultText = $result -join " "
+        
+        return @{
+            Success = $success
+            Result = $result
+            ResultText = $resultText
+        }
+    }
+    catch {
+        return @{
+            Success = $false
+            Result = $_.Exception.Message
+            ResultText = $_.Exception.Message
+        }
+    }
+}
+
+# Function to process test results
+function Process-TestResult {
+    param($size, $testResult, $verbose, $stopOnFailure)
+    
+    if ($testResult.Success) {
+        $script:lastSuccessfulSize = $size
+        if ($verbose) {
+            Add-OutputText "Size $size bytes: SUCCESS"
+        } else {
+            Add-OutputText "✓ $size bytes"
+        }
+        return $false  # Don't stop
+    } else {
+        $resultText = $testResult.ResultText
+        
+        # More detailed error reporting
+        if ($resultText -match "could not find host|host unreachable") {
+            Add-OutputText "✗ $size bytes: Host unreachable/not found"
+            Add-OutputText "  Check host connectivity and try a different target"
+            if ($stopOnFailure) {
+                Add-OutputText "Stopping due to host connectivity issue"
+                return $true  # Stop test
+            }
+        } elseif ($resultText -match "fragmented|fragment|DF set") {
+            Add-OutputText "✗ $size bytes: Fragmentation required (MTU limit reached)"
+            if ($stopOnFailure) {
+                Add-OutputText "MTU limit found - stopping test"
+                return $true  # Stop test
+            }
+        } elseif ($resultText -match "timed out|timeout") {
+            Add-OutputText "✗ $size bytes: Timeout"
+        } else {
+            Add-OutputText "✗ $size bytes: Failed"
+        }
+        
+        if ($verbose) {
+            $errorLines = $testResult.Result | Where-Object { $_ -match "could not find|fragmented|timed out|unreachable|DF set" }
+            foreach ($line in $errorLines) {
+                Add-OutputText "  $line"
+            }
+        }
+        
+        if ($stopOnFailure -and $resultText -notmatch "could not find host|host unreachable") {
+            Add-OutputText "Stopping on first failure (as requested)"
+            return $true  # Stop test
+        }
+    }
+    
+    return $false  # Don't stop
+}
+
+# Timer tick function for asynchronous testing
+function Test-TimerTick {
+    try {
+        if ($script:stopRequested -or $script:currentSize -gt $script:testParams.EndSize) {
+            # Test completed or stopped
+            $script:testTimer.Stop()
+            
+            Add-OutputText "----------------------------------------"
+            if ($script:lastSuccessfulSize -gt 0) {
+                $mtuSize = $script:lastSuccessfulSize + 28  # Add IP header (20) + ICMP header (8)
+                Add-OutputText "Largest successful payload: $script:lastSuccessfulSize bytes"
+                Add-OutputText "Estimated Path MTU: $mtuSize bytes"
+            } else {
+                Add-OutputText "No successful pings found"
+            }
+            
+            if ($script:stopRequested) {
+                Add-OutputText "Test stopped by user."
+            } else {
+                Add-OutputText "Test completed."
+            }
+            
+            $progressBar.Value = 100
+            $script:testRunning = $false
+            $buttonStart.Enabled = $true
+            $buttonStop.Enabled = $false
+            return
+        }
+        
+        # Calculate progress
+        $totalSteps = [math]::Ceiling(($script:testParams.EndSize - $script:testParams.StartSize) / $script:testParams.Increment) + 1
+        $currentStep = [math]::Ceiling(($script:currentSize - $script:testParams.StartSize) / $script:testParams.Increment) + 1
+        $progressPercent = [math]::Min(100, ($currentStep / $totalSteps) * 100)
+        $progressBar.Value = $progressPercent
+        
+        # Run the ping test
+        $testResult = Test-SinglePing $script:currentSize $script:testParams.HostTarget $script:testParams.DontFragment $script:testParams.PingCount $script:testParams.Timeout
+        
+        # Process results
+        $shouldStop = Process-TestResult $script:currentSize $testResult $script:testParams.Verbose $script:testParams.StopOnFailure
+        
+        if ($shouldStop) {
+            $script:stopRequested = $true
+            return
+        }
+        
+        # Move to next size
+        $script:currentSize += $script:testParams.Increment
+    }
+    catch {
+        # Handle any errors during testing
+        Add-OutputText "Error during test: $($_.Exception.Message)"
+        $script:stopRequested = $true
+    }
+}
+
+# Function to start the MTU discovery test
+function Start-MTUTest {
+    if ($script:testRunning) { return }
+    
+    $script:testRunning = $true
+    $script:stopRequested = $false
+    $buttonStart.Enabled = $false
+    $buttonStop.Enabled = $true
+    $script:lastSuccessfulSize = 0
+    
+    # Get test parameters
+    $script:testParams = @{
+        HostTarget = $textBoxHost.Text
+        StartSize = [int]$numericStart.Value
+        EndSize = [int]$numericEnd.Value
+        Increment = [int]$numericIncrement.Value
+        Delay = [int]$numericDelay.Value
+        DontFragment = $checkBoxDF.Checked
+        PingCount = [int]$numericCount.Value
+        Timeout = [int]$numericTimeout.Value
+        StopOnFailure = $checkBoxStopOnFailure.Checked
+        Verbose = $checkBoxVerbose.Checked
+    }
+    
+    $script:currentSize = $script:testParams.StartSize
+    
+    Add-OutputText "Starting MTU Discovery Test..."
+    Add-OutputText "Target: $($script:testParams.HostTarget)"
+    Add-OutputText "Size range: $($script:testParams.StartSize) - $($script:testParams.EndSize) bytes (increment: $($script:testParams.Increment))"
+    Add-OutputText "Don't Fragment: $($script:testParams.DontFragment)"
+    Add-OutputText "Pings per size: $($script:testParams.PingCount)"
+    Add-OutputText "----------------------------------------"
+    
+    # Create and start timer
+    $script:testTimer = New-Object System.Windows.Forms.Timer
+    $script:testTimer.Interval = $script:testParams.Delay
+    $script:testTimer.Add_Tick({ Test-TimerTick })
+    $script:testTimer.Start()
+}
+
+# Event handlers
+$buttonStart.Add_Click({
+    if ($numericStart.Value -gt $numericEnd.Value) {
+        [System.Windows.Forms.MessageBox]::Show("Start size must be less than or equal to end size!", "Invalid Range", "OK", "Warning")
+        return
+    }
+    if ([string]::IsNullOrWhiteSpace($textBoxHost.Text)) {
+        [System.Windows.Forms.MessageBox]::Show("Please enter a target host!", "Missing Host", "OK", "Warning")
+        return
+    }
+    Start-MTUTest
+})
+
+$buttonStop.Add_Click({
+    if ($script:testRunning) {
+        $script:stopRequested = $true
+        Add-OutputText "Stop requested..."
+        $buttonStop.Enabled = $false
+    }
+})
+
+$buttonClear.Add_Click({
+    $textBoxOutput.Clear()
+    $progressBar.Value = 0
+})
+
+$buttonSave.Add_Click({
+    $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $saveDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
+    $saveDialog.DefaultExt = "txt"
+    $saveDialog.FileName = "MTU_Discovery_Results_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
+    
+    if ($saveDialog.ShowDialog() -eq "OK") {
+        try {
+            $textBoxOutput.Text | Out-File -FilePath $saveDialog.FileName -Encoding UTF8
+            [System.Windows.Forms.MessageBox]::Show("Results saved successfully!", "Save Complete", "OK", "Information")
+        }
+        catch {
+            [System.Windows.Forms.MessageBox]::Show("Error saving file: $($_.Exception.Message)", "Save Error", "OK", "Error")
+        }
+    }
+})
+
+# Cleanup on form closing
+$form.Add_FormClosing({
+    try {
+        $script:stopRequested = $true
+        if ($script:testTimer) {
+            $script:testTimer.Stop()
+            $script:testTimer.Dispose()
+            $script:testTimer = $null
+        }
+        $script:testRunning = $false
+    }
+    catch {
+        # Silently handle any cleanup errors
+    }
+})
+
+# Show the form
+try {
+    $result = $form.ShowDialog()
+}
+catch {
+    # Handle any form display errors silently
+}
+finally {
+    # Ensure cleanup happens
+    try {
+        if ($script:testTimer) {
+            $script:testTimer.Stop()
+            $script:testTimer.Dispose()
+        }
+    }
+    catch {
+        # Silently handle cleanup errors
+    }
+}
