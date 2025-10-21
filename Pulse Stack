@@ -1,0 +1,41 @@
+#Portainer Pulse Stack ==========================
+
+services:
+  pulse:
+    image: rcourtman/pulse:latest
+    container_name: pulse
+    restart: unless-stopped
+    ports:
+      - "7655:7655"
+
+    volumes:
+      - /opt/dockerconfig/pulse:/data
+
+#Portainer Pulse Stack ==========================
+
+#Inside of your volume directory, create a .env file with these attributes:
+#Ensure the user and pass are fileld out, this will be your login. The api token is be a seed, and you'll replace in the GUI afterwards. 
+
+PULSE_AUTH_USER=
+PULSE_AUTH_PASS=
+API_TOKEN=c4b7c4c059e1ed51cf590d74b6ef8c33684b473486de0146a8b22e70a44955c1
+
+
+
+#Portainer Pulse Doxcker Agent Stack ==========================
+
+version: '3.8'
+
+services:
+  pulse-docker-agent:
+    image: ghcr.io/rcourtman/pulse-docker-agent:latest
+    container_name: pulse-docker-agent
+    environment:
+      - PULSE_URL=
+      - PULSE_TOKEN=
+  
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+#Portainer Pulse Doxcker Agent Stack ==========================
