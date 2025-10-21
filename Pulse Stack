@@ -14,7 +14,7 @@ services:
 #Portainer Pulse Stack ==========================
 
 #Inside of your volume directory, create a .env file with these attributes:
-#Ensure the user and pass are fileld out, this will be your login. The api token is be a seed, and you'll replace in the GUI afterwards. 
+#Ensure the user and pass are filled out, this will be your login. The api token is a seed, and you'll replace in the GUI afterwards. 
 
 PULSE_AUTH_USER=
 PULSE_AUTH_PASS=
