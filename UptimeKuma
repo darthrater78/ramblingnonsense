@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.0.0
+    container_name: uptime-kuma
+    volumes:
+      - /opt/docker/kuma:/app/data
+
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=America/New_York  # Change to your timezone
