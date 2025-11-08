@@ -31,7 +31,7 @@ services:
 
 
      labels:
-      wud.tag.include: ^\d+\.\d+\.\d+$$
+      wud.tag.include: ^v?\d+\.\d+\.\d+$
       wud.link.template: https://github.com/getwud/wud/releases/tag/$${major}.$${minor}.$${patch}
   
 ==========================================================================================
@@ -39,7 +39,7 @@ services:
 Container Templates
 
    labels:
-      wud.tag.include: ^\d+\.\d+\.\d+$$
+      wud.tag.include: ^v?\d+\.\d+\.\d+$
       wud.link.template: https://github.com/getwud/wud/releases/tag/$${major}.$${minor}.$${patch}
       Change  link to actual project
 
