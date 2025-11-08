@@ -1,0 +1,44 @@
+WUD STACK=================================================================================
+
+services:
+  whatsupdocker:
+    image: getwud/wud:8.1.1
+    container_name: wud_prod
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/docker/wud:/store
+    ports:
+      - 30010:3000
+
+    restart: always
+
+
+    environment:
+
+      - WUD_REGISTRY_HUB_PUBLIC_LOGIN=
+      - WUD_REGISTRY_HUB_PUBLIC_PASSWORD=
+      
+      - WUD_WATCHER_LOCAL_CRON=0 */6 * * *
+      
+      - WUD_TRIGGER_DOCKER_UPDATE_PRUNE=true
+      - WUD_TRIGGER_DOCKER_UPDATE_AUTO=false
+
+      
+      - WUD_TRIGGER_APPRISE_MYNOTIFY_URL=
+      - WUD_TRIGGER_APPRISE_MYNOTIFY_CONFIG=
+      - WUD_TRIGGER_APPRISE_MYNOTIFY_SIMPLETITLE=WUD Prod - $${name} update!
+      - WUD_TRIGGER_APPRISE_MYNOTIFY_SIMPLEBODY=$${local} to $${remote}
+
+
+     labels:
+      wud.tag.include: ^\d+\.\d+\.\d+$$
+      wud.link.template: https://github.com/getwud/wud/releases/tag/$${major}.$${minor}.$${patch}
+  
+==========================================================================================
+
+Container Templates
+
+   labels:
+      wud.tag.include: ^\d+\.\d+\.\d+$$
+      wud.link.template: https://github.com/getwud/wud/releases/tag/$${major}.$${minor}.$${patch}
+      Change  link to actual project
