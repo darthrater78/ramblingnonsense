@@ -43,7 +43,7 @@ Container Templates
       wud.link.template: https://github.com/getwud/wud/releases/tag/$${major}.$${minor}.$${patch}
       Change  link to actual project
 
-
+==========================================================================================
 Node Red JSON
 
 {
