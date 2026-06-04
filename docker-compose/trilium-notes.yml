@@ -1,6 +1,3 @@
-version: '3.8'
-
-# Define network for the service
 networks:
   trilium-network:
     name: trilium-network
@@ -16,8 +13,6 @@ services:
     ports:
       - "8182:8080"
     volumes:
-      # All data stored in /opt/docker/trilliumnotes on host as a bind mount
       - /opt/docker/trilliumnotes:/home/node/trilium-data
-      # System timezone configuration
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro

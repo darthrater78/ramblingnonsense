@@ -1,7 +1,11 @@
-##Examples of using Payload
+# Home Assistant Notification Payloads
 
-###################################################
+Node-RED JSON examples for sending notifications via Home Assistant.
 
+## Using `{{payload}}` (dynamic message)
+
+**Front Door**
+```json
 {
     "title": "Front Door",
     "message": "{{payload}}",
@@ -12,9 +16,10 @@
         "ttl": 0
     }
 }
+```
 
-###################################################
-
+**Water Detection**
+```json
 {
     "title": "WATER IN BASEMENT!",
     "message": "{{payload}}",
@@ -25,21 +30,10 @@
         "ttl": 0
     }
 }
+```
 
-###################################################
-
-{
-    "message": "{{payload.event.service_data.title}}",
-    "data": {
-        "color": "green",
-        "channel": "ABS",
-        "priority": "high",
-        "ttl": 0
-    }
-}
-
-###################################################
-
+**Dehumidifier**
+```json
 {
     "title": "Empty Storage Dehumidifier!",
     "message": "Humidity is {{payload}}% - Time to empty!",
@@ -50,11 +44,25 @@
         "ttl": 0
     }
 }
+```
 
-###################################################
-###################################################
-##Examples of using Custom Message
+**ABS / Service Data Title**
+```json
+{
+    "message": "{{payload.event.service_data.title}}",
+    "data": {
+        "color": "green",
+        "channel": "ABS",
+        "priority": "high",
+        "ttl": 0
+    }
+}
+```
 
+## Using a custom static message
+
+**Power Grid Alert**
+```json
 {
     "title": "ON GRID",
     "message": "UNLIMITED POWER",
@@ -65,10 +73,4 @@
         "ttl": 0
     }
 }
-
-###################################################
-
-
-
-
-
+```
