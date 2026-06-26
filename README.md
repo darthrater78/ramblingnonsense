@@ -24,6 +24,7 @@ All bind mounts follow my standardized `/opt/docker/<service>` convention — se
 | [zigbee2mqtt.yml](docker-compose/zigbee2mqtt.yml) | Zigbee2MQTT — bridges Zigbee devices to MQTT |
 | [zwave-js-ui.yml](docker-compose/zwave-js-ui.yml) | Z-Wave JS UI with web interface and websocket |
 | [pulse.yml](docker-compose/pulse.yml) | Portainer Pulse monitoring stack with Docker agent for remote hosts |
+| [termix.yml](docker-compose/termix.yml) | Termix web-based SSH/RDP/VNC client with guacd backend and SSL |
 
 ## Config Snippets
 

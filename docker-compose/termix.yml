@@ -1,0 +1,32 @@
+services:
+  termix:
+    image: ghcr.io/lukegus/termix:dev-2.5.0
+    container_name: termix
+    restart: always
+    ports:
+      #- "8090:8080" # Plain HTTP (disabled — SSL enabled below)
+      - YOUR_HOST_IP:8443:8443 # Bind the SSL port to a specific host interface
+    volumes:
+      - /opt/docker/termix:/app/data
+    environment:
+      - TZ=America/New_York
+      - ENABLE_SSL=true
+      - SSL_PORT=8443
+    depends_on:
+      - guacd
+    networks:
+      - termix-net
+
+  # guacd backend — required for Termix's RDP/VNC/SSH session rendering
+  guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: guacd
+    restart: unless-stopped
+    ports:
+      - 4822:4822
+    networks:
+      - termix-net
+
+networks:
+  termix-net:
+    driver: bridge
