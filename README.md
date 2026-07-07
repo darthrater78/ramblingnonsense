@@ -25,6 +25,7 @@ All bind mounts follow my standardized `/opt/docker/<service>` convention — se
 | [zwave-js-ui.yml](docker-compose/zwave-js-ui.yml) | Z-Wave JS UI with web interface and websocket |
 | [pulse.yml](docker-compose/pulse.yml) | Portainer Pulse monitoring stack with Docker agent for remote hosts |
 | [termix.yml](docker-compose/termix.yml) | Termix web-based SSH/RDP/VNC client with guacd backend and SSL |
+| [phpipam.yml](docker-compose/phpipam.yml) | phpIPAM IP address management with MariaDB and scheduled scanning |
 
 ## Config Snippets
 
