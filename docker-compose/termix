@@ -1,0 +1,32 @@
+services:
+  termix:
+    image: ghcr.io/lukegus/termix:2.5.0
+    container_name: termix
+    restart: always
+    ports:
+      #- "8090:8080"
+      - 10.0.0.230:8443:8443
+    volumes:
+      - /opt/docker/termix:/app/data
+    environment:
+      #- PUID=1000
+      #- PGID=1000
+      - TZ=America/New_York
+      - ENABLE_SSL=true
+      - SSL_PORT=8443
+    depends_on:
+      - guacd
+    networks:
+      - termix-net
+
+  guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: guacd
+    restart: unless-stopped
+    ports:
+      - 4822:4822
+    networks:
+      - termix-net
+networks:
+  termix-net:
+    driver: bridge
