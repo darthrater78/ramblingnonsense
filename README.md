@@ -26,6 +26,7 @@ All bind mounts follow my standardized `/opt/docker/<service>` convention — se
 | [pulse.yml](docker-compose/pulse.yml) | Portainer Pulse monitoring stack with Docker agent for remote hosts |
 | [termix.yml](docker-compose/termix.yml) | Termix web-based SSH/RDP/VNC client with guacd backend and SSL |
 | [phpipam.yml](docker-compose/phpipam.yml) | phpIPAM IP address management with MariaDB and scheduled scanning |
+| [3270web-tk4.yml](docker-compose/3270web-tk4.yml) | 3270Web browser terminal + TK4- Hercules mainframe emulator (MVS 3.8j) |
 
 ## Config Snippets
 
