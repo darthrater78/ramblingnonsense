@@ -1,3 +1,12 @@
+# Bind mounts follow the /opt/docker/<service> convention.
+# Create the directory and set ownership before first start:
+#   sudo mkdir -p /opt/docker/3270
+#   sudo chown 1000:1000 /opt/docker/3270
+#
+# For a native TN3270 thick client instead of the browser, use x3270:
+#   https://sourceforge.net/projects/x3270/
+# Connect to YOUR_HOST_IP:3271 to reach the TK4- instance.
+
 services:
   3270web:
     image: ghcr.io/3270io/3270web:latest
