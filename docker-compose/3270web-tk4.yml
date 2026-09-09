@@ -1,0 +1,21 @@
+services:
+  3270web:
+    image: ghcr.io/3270io/3270web:latest
+    ports:
+      - YOUR_HOST_IP:3270:3270
+    environment:
+      - GIN_MODE=release
+    volumes:
+      - /opt/docker/3270:/data
+    restart: unless-stopped
+
+  # TK4- Hercules mainframe emulator — runs MVS 3.8j on an emulated IBM System/370
+  # Console available at http://YOUR_HOST_IP:8038
+  tk4:
+    image: ghcr.io/skunklabz/tk4-hercules:latest
+    ports:
+      - YOUR_HOST_IP:3271:3270  # TN3270 port (offset to avoid conflict with 3270Web)
+      - YOUR_HOST_IP:8038:8038  # Hercules web console
+    restart: unless-stopped
+
+networks: {}
